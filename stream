@@ -1,0 +1,44 @@
+#!/bin/bash
+
+## Usage: apple-stream-mplayer.sh httm://example.com/watch.m3u8 
+## If You want to record the stream during playback, apply `rec` as the second parameter.
+
+UA='Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405'
+Title="Stream - $$"
+DATE="$(date +%s)"
+PLNK="$1"
+
+while [[ ! $(wget -O - -U "$UA" -t 1 -nc -nv "$PLNK" | grep '\.ts') ]]
+  do
+    if [[ ! `echo "$PLNK" | grep http` ]]
+      then
+        BP="$(dirname $1)/"
+      else BP=""
+    fi
+    PLNK="$BP$(wget -U "$UA" -O - "$PLNK" | grep -m 1 '\.m3u8')"
+  done
+
+PL="$(wget -O - -U "$UA" -t 1 -nc -nv "$PLNK" | grep '\.ts')"
+
+if [[ ! `echo "$PL" | grep http` ]]
+  then
+    B="-B $(dirname $PLNK)/"
+fi
+
+mplayer -title "$Title" -softvol -vf screenshot <(
+
+if [[ "$2" == "rec" ]]
+  then
+    while [[ `pgrep -f "$Title"` ]]
+      do
+        echo "$PL" | wget -i - -U "$UA" -t 1 -nv $B -O - | tee -a "Stream-$DATE.ts"
+        PL="$(comm -13 <(echo "$PL") <(wget -O - -U "$UA" -t 1 -nc -nv "$PLNK" | grep '\.ts') )"
+      done
+  else
+    while [[ `pgrep -f "$Title"` ]]
+      do
+        echo "$PL" | wget -i - -U "$UA" -t 1 -nv $B -O - 
+        PL="$(comm -13 <(echo "$PL") <(wget -O - -U "$UA" -t 1 -nc -nv "$PLNK" | grep '\.ts') )"
+      done
+fi   
+)

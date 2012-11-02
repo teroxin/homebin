@@ -1,0 +1,13 @@
+#!/bin/bash
+
+DIR="/Users/bettse/Library/Application Support/tagEventor/scripts"
+
+TAG=$1
+ACTION=$2
+SCRIPT=${DIR}/${TAG}
+if [ -e "${SCRIPT}" ]
+then
+    $("${SCRIPT}" ${TAG} ${ACTION})
+else
+    $("${DIR}/generic" ${TAG} ${ACTION})
+fi
