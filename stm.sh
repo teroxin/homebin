@@ -11,7 +11,7 @@ fi
 if [[ $# > 0 && $1 -eq 'add' ]]; then
     echo "Add"
     #add download
-    defaults write com.projectswithlove.servetome STMSharedFolderPaths -array-add  "/Volumes/4Big/Downloads"
+    defaults write com.projectswithlove.servetome STMSharedFolderPaths -array-add  "/Users/bettse/Downloads"
 else
     echo "Restore"
     #restore old values
