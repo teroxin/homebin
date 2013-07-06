@@ -108,3 +108,5 @@ airport
 backup.stm
 Sencha/
 osxmirrord
+hue.cfg
+*.pyc
